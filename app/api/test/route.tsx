@@ -8,7 +8,6 @@ if (!apiKey) {
 }
 
 export async function GET(req: NextRequest) {
-  try {
     const authorizationHeader = req.headers.get('Authorization');
     if (!authorizationHeader) {
       return NextResponse.json({
@@ -30,11 +29,10 @@ export async function GET(req: NextRequest) {
       now: Date.now(),
       message: 'Hello world from API',
     });
-  } catch (err: unknown) {
-    console.error(err);
-    return NextResponse.json({
-      status: 500,
-      message: 'Internal Server Error',
-    });
-  }
+
+    // console.error(err);
+    // return NextResponse.json({
+    //   status: 500,
+    //   message: 'Internal Server Error',
+    // });
 }
