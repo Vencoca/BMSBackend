@@ -31,10 +31,10 @@ export async function GET(req: NextRequest) {
       message: 'Hello world from API',
     });
   } catch (err: unknown) {
-    console.error(err);
-    return NextResponse.json({
-      status: 500,
-      message: 'Internal Server Error',
-    });
+    console.log(err);
+    // return NextResponse.json({
+    //   status: 500,
+    //   message: 'Internal Server Error',
+    // });
   }
 }
