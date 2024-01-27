@@ -1,21 +1,31 @@
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-// export const runtime = 'edge'
+const apiKey = process.env.API_KEY;
+
+if (!apiKey) {
+  throw new Error('API_KEY environment variable is missing.');
+}
 
 export async function GET(req: NextRequest) {
   try {
+    const incomingApiKey = req.headers.get('Authorization')?.replace('Bearer ', '');
+    if (!incomingApiKey || incomingApiKey !== apiKey) {
+      return NextResponse.json({
+        status: 401,
+        message: 'Unauthorized: Invalid API key',
+      });
+    }
     return NextResponse.json({
       status: 200,
-      revalidated: true,
       now: Date.now(),
-      message: "Hello world from API"
-    })
+      message: 'Hello world from API',
+    });
   } catch (err: unknown) {
-    console.error(err)
-    if (err instanceof Error) {
-      return new Response(err.message, { status: 500 })
-    }
-    return new Response('Error', { status: 500 })
+    console.error(err);
+    return NextResponse.json({
+      status: 500,
+      message: 'Internal Server Error',
+    });
   }
 }
