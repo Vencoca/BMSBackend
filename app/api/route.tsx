@@ -9,13 +9,23 @@ if (!apiKey) {
 
 export async function GET(req: NextRequest) {
   try {
-    const incomingApiKey = req.headers.get('Authorization')?.replace('Bearer ', '');
-    if (!incomingApiKey || incomingApiKey !== apiKey) {
+
+    const authorizationHeader = req.headers.get('Authorization');
+    if (!authorizationHeader) {
+      return NextResponse.json({
+        status: 401,
+        message: 'Unauthorized: Missing Authorization header',
+      });
+    }
+
+    const incomingApiKey = authorizationHeader.replace('Bearer ', '');
+    if (incomingApiKey !== apiKey) {
       return NextResponse.json({
         status: 401,
         message: 'Unauthorized: Invalid API key',
       });
     }
+
     return NextResponse.json({
       status: 200,
       now: Date.now(),
