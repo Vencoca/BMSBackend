@@ -8,33 +8,25 @@ if (!apiKey) {
 }
 
 export async function GET(req: NextRequest) {
-  try {
-    const authorizationHeader = req.headers.get('Authorization');
-    if (!authorizationHeader) {
-      return NextResponse.json({
-        status: 401,
-        message: 'Unauthorized: Missing Authorization header',
-      });
-    }
-
-    const incomingApiKey = authorizationHeader.replace('Bearer ', '');
-    if (incomingApiKey !== apiKey) {
-      return NextResponse.json({
-        status: 401,
-        message: 'Unauthorized: Invalid API key',
-      });
-    }
-
+  const authorizationHeader = req.headers.get('Authorization');
+  if (!authorizationHeader) {
     return NextResponse.json({
-      status: 200,
-      now: Date.now(),
-      message: 'Hello world from API',
+      status: 401,
+      message: 'Unauthorized: Missing Authorization header',
     });
-  } catch (err: unknown) {
-    console.log(err);
-    // return NextResponse.json({
-    //   status: 500,
-    //   message: 'Internal Server Error',
-    // });
   }
+
+  const incomingApiKey = authorizationHeader.replace('Bearer ', '');
+  if (incomingApiKey !== apiKey) {
+    return NextResponse.json({
+      status: 401,
+      message: 'Unauthorized: Invalid API key',
+    });
+  }
+
+  return NextResponse.json({
+    status: 200,
+    now: Date.now(),
+    message: 'Hello world from API',
+  });
 }
