@@ -24,9 +24,10 @@ export async function GET(req: NextRequest) {
     }
     
     const ApiHandler = singletonTuyaAPIHandler;
+    const data = await singletonTuyaAPIHandler.getData();
     return NextResponse.json({
         status: 200,
         now: Date.now(),
-        data: "Hey",
+        data: data,
     });
 }

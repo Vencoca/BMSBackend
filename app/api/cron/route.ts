@@ -1,5 +1,7 @@
+import singletonTuyaAPIHandler from '@/utils/TuyaCloudApiHandler';
 import clientPromise from '@/utils/mongodb';
 import { NextRequest, NextResponse } from 'next/server';
+
 
 export async function GET(req: NextRequest) {
     if (req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -12,18 +14,22 @@ export async function GET(req: NextRequest) {
         const client = await clientPromise;
         const db = client.db("homeStats");
         const collection = db.collection("smartStrip")
-        const data = {
-            current: 0, 
-            voltage: 236,
-            power: 0,
+        
+        const ApiHandler = singletonTuyaAPIHandler;
+        const data = await singletonTuyaAPIHandler.getData();
+        const curCurrent = data.find((item: any) => item.code === 'cur_current').value;
+        const curPower = data.find((item: any) => item.code === 'cur_power').value;
+        const curVoltage = data.find((item: any) => item.code === 'cur_voltage').value;
+        const dataForMongo = {
+            current: curCurrent,
+            voltage: curVoltage,
+            power: curPower,
             ts: new Date(),
         }
-
-        const result = await collection.insertOne(data);
+        const result = await collection.insertOne(dataForMongo);
 
         return NextResponse.json({
             status: 200,
-            now: Date.now(),
             data: result,
         });
     } catch (e) {
