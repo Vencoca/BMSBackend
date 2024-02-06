@@ -1,9 +1,10 @@
 import singletonTuyaAPIHandler from "@/utils/TuyaCloudApiHandler";
+import clientPromise from "@/utils/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 const apiKey = process.env.API_KEY;
 if (!apiKey) {
-  throw new Error('API_KEY environment variable is missing.');
+    throw new Error('API_KEY environment variable is missing.');
 }
 
 export async function GET(req: NextRequest) {
@@ -22,12 +23,21 @@ export async function GET(req: NextRequest) {
             message: 'Unauthorized: Invalid API key',
         });
     }
-    
-    const ApiHandler = singletonTuyaAPIHandler;
-    const data = await singletonTuyaAPIHandler.getData();
+
+    const client = await clientPromise;
+    const db = client.db("homeStats");
+    const collection = db.collection("smartStrip");
+
+    var currentDate = new Date();
+    var oneWeekAgoTimestamp = currentDate.getTime() - (1 * 24 * 60 * 60 * 1000);
+    var oneWeekAgoDate = new Date(oneWeekAgoTimestamp);
+
+    const filter = { "ts": { "$gte": oneWeekAgoDate } };
+    const result = await collection.find(filter).toArray();
+
     return NextResponse.json({
         status: 200,
-        now: Date.now(),
-        data: data,
+        now: currentDate.getTime(),
+        data: result,
     });
 }
