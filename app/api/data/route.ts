@@ -38,6 +38,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
         status: 200,
         now: currentDate.getTime(),
-        data: result,
+        result: result,
     });
 }
