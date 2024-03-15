@@ -2,6 +2,6 @@
 
 export default function Home() {
   return (
-    <h1>BMS - Backend</h1>
+    <h1>BMS - Data gathering middleware</h1>
   );
 }
