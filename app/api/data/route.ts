@@ -25,7 +25,8 @@ export async function GET(req: NextRequest) {
     });
   }
   return NextResponse.json({
-    status: 200
+    status: 200,
+    message: "Service available"
   });
 }
 
