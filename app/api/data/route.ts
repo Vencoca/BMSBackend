@@ -11,40 +11,50 @@ if (!apiKey) {
 export async function GET(req: NextRequest) {
   const authorizationHeader = req.headers.get("Authorization");
   if (!authorizationHeader) {
-    return NextResponse.json({
-      status: 401,
-      message: "Unauthorized: Missing Authorization header"
-    });
+    return NextResponse.json(
+      {
+        message: "Unauthorized: Missing Authorization header"
+      },
+      { status: 401 }
+    );
   }
 
   const incomingApiKey = authorizationHeader.replace("Bearer ", "");
   if (incomingApiKey !== apiKey) {
-    return NextResponse.json({
-      status: 401,
-      message: "Unauthorized: Invalid API key"
-    });
+    return NextResponse.json(
+      {
+        message: "Unauthorized: Invalid API key"
+      },
+      { status: 401 }
+    );
   }
-  return NextResponse.json({
-    status: 200,
-    message: "Service available"
-  });
+  return NextResponse.json(
+    {
+      message: "Service available"
+    },
+    { status: 200 }
+  );
 }
 
 export async function POST(req: NextRequest) {
   const authorizationHeader = req.headers.get("Authorization");
   if (!authorizationHeader) {
-    return NextResponse.json({
-      status: 401,
-      message: "Unauthorized: Missing Authorization header"
-    });
+    return NextResponse.json(
+      {
+        message: "Unauthorized: Missing Authorization header"
+      },
+      { status: 401 }
+    );
   }
 
   const incomingApiKey = authorizationHeader.replace("Bearer ", "");
   if (incomingApiKey !== apiKey) {
-    return NextResponse.json({
-      status: 401,
-      message: "Unauthorized: Invalid API key"
-    });
+    return NextResponse.json(
+      {
+        message: "Unauthorized: Invalid API key"
+      },
+      { status: 401 }
+    );
   }
 
   const body = await req.json();
@@ -59,10 +69,12 @@ export async function POST(req: NextRequest) {
     typeof numberOfItems !== "number" ||
     !["$sum", "$avg", "$min", "$max"].includes(aggregationOperation)
   ) {
-    return NextResponse.json({
-      status: 400,
-      message: "Bad Request: Invalid request body format"
-    });
+    return NextResponse.json(
+      {
+        message: "Bad Request: Invalid request body format"
+      },
+      { status: 400 }
+    );
   }
 
   try {
@@ -73,14 +85,18 @@ export async function POST(req: NextRequest) {
       numberOfItems,
       aggregationOperation
     );
-    return NextResponse.json({
-      status: 200,
-      result
-    });
+    return NextResponse.json(
+      {
+        result
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return NextResponse.json({
-      status: 500,
-      message: "Internal Server Error"
-    });
+    return NextResponse.json(
+      {
+        message: "Internal Server Error"
+      },
+      { status: 500 }
+    );
   }
 }
