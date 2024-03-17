@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const timestamp = new Date();
     const measurementsPromises = [
       createMeasurement("smartStripCurrent", curCurrent, timestamp),
-      createMeasurement("smartStripVoltage", curVoltage, timestamp)
+      createMeasurement("smartStripVoltage", curVoltage / 10, timestamp)
     ];
     Promise.all(measurementsPromises);
     return NextResponse.json({
