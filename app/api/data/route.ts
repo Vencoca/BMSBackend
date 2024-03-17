@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    console.log("Im about to fetch Measurement");
     const result = await fetchMeasurement(
       measurementName,
       from,
@@ -105,10 +106,10 @@ export async function POST(req: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
       {
-        message: "Internal Server Error"
+        message: `Internal Server Error: ${error.message}`
       },
       { status: 500 }
     );
