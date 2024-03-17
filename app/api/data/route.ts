@@ -1,18 +1,8 @@
-import Ajv from "ajv/dist/jtd";
+import Ajv, { JTDSchemaType } from "ajv/dist/jtd";
 import { NextRequest, NextResponse } from "next/server";
 
 import { fetchMeasurement } from "@/lib/services/measurements";
-const ajv = new Ajv();
-const schema = {
-  properties: {
-    measurementName: { type: "string" },
-    from: { type: "string", format: "date-time" },
-    to: { type: "string", format: "date-time" },
-    numberOfItems: { type: "number" },
-    aggregationOperation: { enum: ["$sum", "$avg", "$min", "$max"] }
-  }
-};
-const validate = ajv.compile(schema);
+import { MeasurementType } from "@/models/measurements";
 
 const apiKey = process.env.API_KEY;
 if (!apiKey) {
@@ -46,6 +36,25 @@ export async function GET(req: NextRequest) {
     { status: 200 }
   );
 }
+
+const ajv = new Ajv();
+interface postData {
+  measurementName: MeasurementType;
+  from: Date;
+  to: Date;
+  numberOfItems: number;
+  aggregationOperation: "$sum" | "$avg" | "$min" | "$max";
+}
+const schema: JTDSchemaType<postData> = {
+  properties: {
+    measurementName: { type: "string" },
+    from: { type: "timestamp" },
+    to: { type: "timestamp" },
+    numberOfItems: { type: "int32" },
+    aggregationOperation: { enum: ["$sum", "$avg", "$min", "$max"] }
+  }
+};
+const validate = ajv.compile(schema);
 
 export async function POST(req: NextRequest) {
   const authorizationHeader = req.headers.get("Authorization");
