@@ -95,8 +95,8 @@ export async function POST(req: NextRequest) {
   try {
     const result = await fetchMeasurement(
       measurementName,
-      from,
-      to,
+      new Date(from),
+      new Date(to),
       numberOfItems,
       aggregationOperation
     );
