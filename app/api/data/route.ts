@@ -1,6 +1,7 @@
 import Ajv, { JTDSchemaType } from "ajv/dist/jtd";
 import { NextRequest, NextResponse } from "next/server";
 
+import Logger from "@/lib/logger";
 import { fetchMeasurement } from "@/lib/services/measurements";
 import { MeasurementType } from "@/models/measurements";
 
@@ -92,7 +93,6 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    console.log("Im about to fetch Measurement");
     const result = await fetchMeasurement(
       measurementName,
       from,
@@ -107,9 +107,10 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error: any) {
+    Logger.error(error.message);
     return NextResponse.json(
       {
-        message: `Internal Server Error: ${error.message}`
+        message: "Internal Server Error"
       },
       { status: 500 }
     );
