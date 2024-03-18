@@ -5,11 +5,6 @@ import Logger from "@/lib/logger";
 import { fetchMeasurement } from "@/lib/services/measurements";
 import { MeasurementType } from "@/models/measurements";
 
-const apiKey = process.env.API_KEY;
-if (!apiKey) {
-  throw new Error("API_KEY environment variable is missing.");
-}
-
 export async function GET(req: NextRequest) {
   const authorizationHeader = req.headers.get("Authorization");
   if (!authorizationHeader) {
@@ -22,7 +17,7 @@ export async function GET(req: NextRequest) {
   }
 
   const incomingApiKey = authorizationHeader.replace("Bearer ", "");
-  if (incomingApiKey !== apiKey) {
+  if (incomingApiKey !== process.env.API_KEY) {
     return NextResponse.json(
       {
         message: "Unauthorized: Invalid API key"
@@ -69,7 +64,7 @@ export async function POST(req: NextRequest) {
   }
 
   const incomingApiKey = authorizationHeader.replace("Bearer ", "");
-  if (incomingApiKey !== apiKey) {
+  if (incomingApiKey !== process.env.API_KEY) {
     return NextResponse.json(
       {
         message: "Unauthorized: Invalid API key"
@@ -100,6 +95,7 @@ export async function POST(req: NextRequest) {
       numberOfItems,
       aggregationOperation
     );
+
     return NextResponse.json(
       {
         result

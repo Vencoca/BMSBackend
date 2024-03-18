@@ -29,7 +29,7 @@ export async function fetchMeasurement(
   to: Date,
   numberOfItems: number,
   aggregationOperation: "$sum" | "$avg" | "$min" | "$max"
-): Promise<IMeasurement[]> {
+): Promise<Partial<IMeasurement>[]> {
   const timeIntervalInMilliseconds =
     (to.getTime() - from.getTime()) / numberOfItems;
   const matchStage: any = { $match: {} };
@@ -70,6 +70,5 @@ export async function fetchMeasurement(
       $sort: { timestamp: 1 }
     }
   ];
-
   return await Measurements[measurementName].aggregate(aggregationPipeline);
 }
