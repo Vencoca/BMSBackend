@@ -1,6 +1,7 @@
 import Ajv, { JTDSchemaType } from "ajv/dist/jtd";
 import { NextRequest, NextResponse } from "next/server";
 
+import connectToMongoDB from "@/lib/database";
 import Logger from "@/lib/logger";
 import { fetchMeasurement } from "@/lib/services/measurements";
 import { MeasurementType } from "@/models/measurements";
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    await connectToMongoDB();
     const result = await fetchMeasurement(
       measurementName,
       new Date(from),
