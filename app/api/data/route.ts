@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/lib/database";
 import Logger from "@/lib/logger";
 import { fetchMeasurement } from "@/lib/services/measurements";
-import { MeasurementType } from "@/models/measurements";
+import { measurementsNames, MeasurementType } from "@/models/measurements";
 
 export async function GET(req: NextRequest) {
   const authorizationHeader = req.headers.get("Authorization");
@@ -28,7 +28,10 @@ export async function GET(req: NextRequest) {
   }
   return NextResponse.json(
     {
-      message: "Service available"
+      message: "Service available",
+      measurements: measurementsNames,
+      aggregationMethods: ["$sum", "$avg", "$min", "$max"],
+      lastChange: "2024-03-20T16:08:00Z"
     },
     { status: 200 }
   );
