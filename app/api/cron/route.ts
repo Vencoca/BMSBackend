@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import connectToMongoDB from "@/lib/database";
+import getTemperatureInPrague from "@/lib/OpenWeather";
 import { createMeasurement } from "@/lib/services/measurements";
 import singletonTuyaAPIHandler from "@/lib/TuyaCloudApiHandler";
 
@@ -22,12 +23,14 @@ export async function GET(req: NextRequest) {
     const curVoltage = data.find(
       (item: any) => item.code === "cur_voltage"
     ).value;
+    const temperature = await getTemperatureInPrague();
     const timestamp = new Date();
     const measurementsPromises = [
       createMeasurement("smartStripCurrent", curCurrent, timestamp),
-      createMeasurement("smartStripVoltage", curVoltage / 10, timestamp)
+      createMeasurement("smartStripVoltage", curVoltage / 10, timestamp),
+      createMeasurement("pragueTemperature", temperature, timestamp)
     ];
-    Promise.all(measurementsPromises);
+    await Promise.all(measurementsPromises);
     return NextResponse.json({
       status: 200
     });

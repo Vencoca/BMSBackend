@@ -1,7 +1,7 @@
 import mongoose, { Document, Model, models, Schema } from "mongoose";
 
 export const measurementsNames = [
-  "temperatureInPrague",
+  "pragueTemperature",
   "smartStripCurrent",
   "smartStripVoltage"
 ];

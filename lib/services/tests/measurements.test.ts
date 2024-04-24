@@ -21,14 +21,12 @@ describe("Measurement service tests", function () {
 
   describe("fetchAllMeasurements", () => {
     test("fetchAllMeasurements (seeding)", async () => {
-      let temperatureInPrague = await fetchAllMeasurements(
-        "temperatureInPrague"
+      let pragueTemperature = await fetchAllMeasurements("pragueTemperature");
+      expect(pragueTemperature).toHaveLength(
+        measurementsMocks["pragueTemperature"].length
       );
-      expect(temperatureInPrague).toHaveLength(
-        measurementsMocks["temperatureInPrague"].length
-      );
-      expect(testData.get("temperatureInPrague")).toHaveLength(
-        measurementsMocks["temperatureInPrague"].length
+      expect(testData.get("pragueTemperature")).toHaveLength(
+        measurementsMocks["pragueTemperature"].length
       );
     });
   });
@@ -36,7 +34,7 @@ describe("Measurement service tests", function () {
   describe("fetchMeasurement", function () {
     test("Fetch all temperatures (agregation method should be equal)", async function () {
       const temperaturesAvg = await fetchMeasurement(
-        "temperatureInPrague",
+        "pragueTemperature",
         new Date("2024-01-01T00:00:00Z"),
         new Date("2024-01-02T00:00:00Z"),
         24,
@@ -46,14 +44,14 @@ describe("Measurement service tests", function () {
 
       for (let i = 0; i < temperaturesAvg.length; i++) {
         expect(temperaturesAvg[i].timestamp).toEqual(
-          testData.get("temperatureInPrague")[i].timestamp
+          testData.get("pragueTemperature")[i].timestamp
         );
         expect(temperaturesAvg[i].value).toEqual(
-          testData.get("temperatureInPrague")[i].value
+          testData.get("pragueTemperature")[i].value
         );
       }
       const temperaturesMax = await fetchMeasurement(
-        "temperatureInPrague",
+        "pragueTemperature",
         new Date("2024-01-01T00:00:00Z"),
         new Date("2024-01-02T00:00:00Z"),
         24,
@@ -61,7 +59,7 @@ describe("Measurement service tests", function () {
       );
       expect(temperaturesMax).toEqual(temperaturesAvg);
       const temperaturesMin = await fetchMeasurement(
-        "temperatureInPrague",
+        "pragueTemperature",
         new Date("2024-01-01T00:00:00Z"),
         new Date("2024-01-02T00:00:00Z"),
         24,
@@ -69,7 +67,7 @@ describe("Measurement service tests", function () {
       );
       expect(temperaturesMin).toEqual(temperaturesAvg);
       const temperaturesSum = await fetchMeasurement(
-        "temperatureInPrague",
+        "pragueTemperature",
         new Date("2024-01-01T00:00:00Z"),
         new Date("2024-01-02T00:00:00Z"),
         24,
@@ -80,7 +78,7 @@ describe("Measurement service tests", function () {
 
     test("Averaging values", async function () {
       const temperaturesAvg = await fetchMeasurement(
-        "temperatureInPrague",
+        "pragueTemperature",
         new Date("2024-01-01T00:00:00Z"),
         new Date("2024-01-02T00:00:00Z"),
         12,
@@ -88,7 +86,7 @@ describe("Measurement service tests", function () {
       );
       expect(temperaturesAvg).toHaveLength(12);
       const temperaturesAvgAll = await fetchMeasurement(
-        "temperatureInPrague",
+        "pragueTemperature",
         new Date("2024-01-01T00:00:00Z"),
         new Date("2024-01-02T00:00:00Z"),
         1,
@@ -103,13 +101,16 @@ describe("Measurement service tests", function () {
 
     test("Empty interval", async function () {
       const temperaturesAvg = await fetchMeasurement(
-        "temperatureInPrague",
+        "pragueTemperature",
         new Date("2024-01-02T00:00:00Z"),
         new Date("2024-01-03T00:00:00Z"),
         24,
         "$avg"
       );
-      expect(temperaturesAvg).toHaveLength(0);
+      expect(temperaturesAvg).toHaveLength(24);
+      temperaturesAvg.forEach((temperature) => {
+        expect(temperature.value).toBeNull();
+      });
     });
   });
 });

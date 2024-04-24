@@ -1,6 +1,9 @@
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { Mongoose } from "mongoose";
 import { testApiHandler } from "next-test-api-route-handler"; // ◄ Must be first import
 
 import * as measurementHelper from "@/lib/services/measurements";
+import seedDB from "@/lib/services/tests/seedDB";
 import { IMeasurement } from "@/models/measurements";
 
 import * as appHandler from "./route";
@@ -12,8 +15,19 @@ jest.mock("../../../lib/services/measurements", () => {
   };
 });
 
+let mongoose: Mongoose;
+let mongodb: MongoMemoryServer;
+// eslint-disable-next-line unused-imports/no-unused-vars
+let testData: Map<string, any>;
+
 beforeAll(async () => {
+  [mongodb, mongoose, testData] = await seedDB();
   process.env.API_KEY = "secret";
+});
+
+afterAll(async () => {
+  mongodb.stop();
+  await mongoose?.connection.close();
 });
 
 describe("POST", function () {
@@ -144,7 +158,14 @@ describe("GET", function () {
           headers: { authorization: "Bearer secret" }
         });
         await expect(res.json()).resolves.toStrictEqual({
-          message: "Service available"
+          message: "Service available",
+          aggregationMethods: ["$sum", "$avg", "$min", "$max"],
+          lastChange: "2024-04-24T13:08:00Z",
+          measurements: [
+            "pragueTemperature",
+            "smartStripCurrent",
+            "smartStripVoltage"
+          ]
         });
       }
     });

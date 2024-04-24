@@ -14,12 +14,12 @@ export default async function seedDB(): Promise<
   await Promise.all([seedMeasurements()]);
 
   const [temperatureInPrague, smartStripVoltage] = await Promise.all([
-    fetchAllMeasurements("temperatureInPrague"),
+    fetchAllMeasurements("pragueTemperature"),
     fetchAllMeasurements("smartStripVoltage")
   ]);
 
   const testData = new Map<string, any>();
-  testData.set("temperatureInPrague", temperatureInPrague);
+  testData.set("pragueTemperature", temperatureInPrague);
   testData.set("smartStripVoltage", smartStripVoltage);
   return [mongodb, mongoose, testData];
 }
