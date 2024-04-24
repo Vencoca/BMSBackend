@@ -7,6 +7,7 @@ export default function generateData(
   from: Date,
   to: Date,
   numberOfItems: number,
+  // eslint-disable-next-line unused-imports/no-unused-vars
   aggregationOperation: "$sum" | "$avg" | "$min" | "$max"
 ): Promise<Partial<IMeasurement>[]> {
   const seed = from.getTime() + to.getTime();

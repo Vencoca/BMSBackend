@@ -30,8 +30,7 @@ export async function fetchMeasurement(
   numberOfItems: number,
   aggregationOperation: "$sum" | "$avg" | "$min" | "$max"
 ): Promise<Partial<IMeasurement>[]> {
-  const timeIntervalInMilliseconds =
-    (to.getTime() - from.getTime()) / numberOfItems;
+  //Match stage
   const matchStage: any = { $match: {} };
   from &&
     (matchStage.$match.timestamp = {
@@ -44,31 +43,64 @@ export async function fetchMeasurement(
       $lte: to
     });
 
+  //Group stage
+  const timeIntervalInMilliseconds =
+    (to.getTime() - from.getTime()) / numberOfItems;
+  const intervalSize = {
+    $divide: [{ $subtract: ["$timestamp", from] }, timeIntervalInMilliseconds]
+  };
+  const intervalStart = {
+    $add: [
+      from,
+      { $multiply: [timeIntervalInMilliseconds, { $trunc: intervalSize }] }
+    ]
+  };
+  const groupStage: any = {
+    $group: {
+      _id: { $trunc: intervalSize },
+      timestamp: { $first: intervalStart }, // Project the start of the interval
+      value: {}
+    }
+  };
+  groupStage.$group.value[aggregationOperation] = "$value";
+
   const aggregationPipeline: any[] = [
     matchStage,
-    {
-      $group: {
-        _id: {
-          $toDate: {
-            $subtract: [
-              { $toLong: "$timestamp" },
-              { $mod: [{ $toLong: "$timestamp" }, timeIntervalInMilliseconds] }
-            ]
-          }
-        },
-        value: { [aggregationOperation]: "$value" }
-      }
-    },
-    {
-      $project: {
-        _id: 0,
-        timestamp: "$_id",
-        value: 1
-      }
-    },
+    groupStage,
     {
       $sort: { timestamp: 1 }
     }
   ];
-  return await Measurements[measurementName].aggregate(aggregationPipeline);
+  const data =
+    await Measurements[measurementName].aggregate(aggregationPipeline);
+  return addNullValues(data, from, timeIntervalInMilliseconds, numberOfItems);
+}
+
+function addNullValues(
+  data: any[],
+  startInterval: Date,
+  intervalSize: number,
+  numberOfItems: number
+): any[] {
+  if (data.length === numberOfItems) {
+    return data;
+  }
+
+  const nullValues: any[] = [];
+
+  let currentInterval = new Date(startInterval);
+  for (let i = 0; i < numberOfItems; i++) {
+    nullValues.push({
+      _id: i,
+      timestamp: new Date(currentInterval),
+      value: null
+    });
+    currentInterval.setTime(currentInterval.getTime() + intervalSize);
+  }
+
+  data.forEach((element) => {
+    nullValues[element._id].value = element.value;
+  });
+
+  return nullValues;
 }

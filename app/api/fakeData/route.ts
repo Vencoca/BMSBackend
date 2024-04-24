@@ -1,9 +1,8 @@
 import Ajv, { JTDSchemaType } from "ajv/dist/jtd";
 import { NextRequest, NextResponse } from "next/server";
 
-import connectToMongoDB from "@/lib/database";
+import generateData from "@/lib/generateData";
 import Logger from "@/lib/logger";
-import { fetchMeasurement } from "@/lib/services/measurements";
 import { measurementsNames, MeasurementType } from "@/models/measurements";
 
 export async function GET(req: NextRequest) {
@@ -31,7 +30,7 @@ export async function GET(req: NextRequest) {
       message: "Service available",
       measurements: measurementsNames,
       aggregationMethods: ["$sum", "$avg", "$min", "$max"],
-      lastChange: "2024-04-24T13:08:00Z"
+      lastChange: "2024-03-20T16:08:00Z"
     },
     { status: 200 }
   );
@@ -92,8 +91,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await connectToMongoDB();
-    const result = await fetchMeasurement(
+    const result = await generateData(
       measurementName,
       new Date(from),
       new Date(to),
