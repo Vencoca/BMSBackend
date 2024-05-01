@@ -17,7 +17,7 @@ export default function generateData(
   const data = [];
 
   const randInterval = { from: 0, to: 0 };
-  if (measurementName === "temperatureInPrague") {
+  if (measurementName === "pragueTemperature") {
     randInterval.from = 15;
     randInterval.to = 24;
   } else if (measurementName === "smartStripCurrent") {
@@ -30,7 +30,7 @@ export default function generateData(
 
   for (let i = 0; i < numberOfItems; i++) {
     let zero;
-    if (measurementName !== "temperatureInPrague") {
+    if (measurementName !== "pragueTemperature") {
       zero = prand.unsafeUniformIntDistribution(0, 1, rng);
     } else {
       zero = 0;
