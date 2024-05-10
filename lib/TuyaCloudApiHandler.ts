@@ -1,3 +1,5 @@
+import Logger from "./logger";
+
 let CryptoJS = require("crypto-js");
 let instance: TuyaCloudApiHandler;
 
@@ -32,7 +34,7 @@ class TuyaCloudApiHandler {
       const data = await response.json();
       this.access = data.result;
     } catch (error) {
-      console.error("Error:", error);
+      Logger.debug("Error:", error);
       throw new Error("Failed to get access token");
     }
   }
@@ -89,7 +91,7 @@ class TuyaCloudApiHandler {
       const data = await response.json();
       return data.result;
     } catch (error) {
-      console.error("Error:", error);
+      Logger.debug("Error:", error);
       throw new Error("Failed to get data");
     }
   }
