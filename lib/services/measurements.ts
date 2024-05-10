@@ -76,7 +76,7 @@ export async function fetchMeasurement(
   return addNullValues(data, from, timeIntervalInMilliseconds, numberOfItems);
 }
 
-function addNullValues(
+export function addNullValues(
   data: any[],
   startInterval: Date,
   intervalSize: number,
@@ -97,7 +97,6 @@ function addNullValues(
     });
     currentInterval.setTime(currentInterval.getTime() + intervalSize);
   }
-
   data.forEach((element) => {
     nullValues[element._id].value = element.value;
   });

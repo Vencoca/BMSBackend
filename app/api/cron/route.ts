@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import connectToMongoDB from "@/lib/database";
+import Logger from "@/lib/logger";
 import getTemperatureInPrague from "@/lib/OpenWeather";
 import { createMeasurement } from "@/lib/services/measurements";
 import singletonTuyaAPIHandler from "@/lib/TuyaCloudApiHandler";
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
       status: 200
     });
   } catch (e) {
-    console.error(e);
+    Logger.debug(e);
     return NextResponse.json({
       status: 500,
       error: "Internal Server Error"
