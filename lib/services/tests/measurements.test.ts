@@ -1,7 +1,12 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { Mongoose } from "mongoose";
 
-import { fetchAllMeasurements, fetchMeasurement } from "../measurements";
+import {
+  addNullValues,
+  createMeasurement,
+  fetchAllMeasurements,
+  fetchMeasurement
+} from "../measurements";
 import measurementsMocks from "../mocks/measurements.json";
 import seedDB from "./seedDB";
 
@@ -111,6 +116,38 @@ describe("Measurement service tests", function () {
       temperaturesAvg.forEach((temperature) => {
         expect(temperature.value).toBeNull();
       });
+    });
+  });
+
+  describe("addNullValues", () => {
+    test("addNullValues to emptyy array", async () => {
+      const data = [
+        { _id: 0, value: 10 },
+        { _id: 2, value: 20 }
+      ];
+      const startInterval = new Date();
+      const intervalSize = 100;
+      const numberOfItems = 5;
+      const result = addNullValues(
+        data,
+        startInterval,
+        intervalSize,
+        numberOfItems
+      );
+
+      expect(result).toHaveLength(numberOfItems);
+      expect(result[0].value).toBe(10);
+      expect(result[1].value).toBe(null);
+      expect(result[2].value).toBe(20);
+    });
+  });
+
+  describe("createMeasurement", () => {
+    test("Error while creating", async () => {
+      // @ts-ignore
+      await expect(createMeasurement({}, {}, {})).rejects.toThrow(
+        "Error creating measurement: MeasurementModel is not a constructor"
+      );
     });
   });
 });

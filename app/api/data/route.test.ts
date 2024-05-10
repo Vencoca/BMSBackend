@@ -74,6 +74,33 @@ describe("POST", function () {
       }
     });
   });
+  test("Wrong request", async () => {
+    const spy = jest.spyOn(measurementHelper, "fetchMeasurement");
+    const mockedError = new Error("Mocked error");
+    spy.mockRejectedValue(mockedError);
+
+    await testApiHandler({
+      appHandler,
+      async test({ fetch }) {
+        const res = await fetch({
+          method: "POST",
+          headers: { authorization: "Bearer secret" },
+          body: JSON.stringify({
+            measurementName: "smartStripCurrent",
+            from: "2024-03-17T12:29:24.826Z",
+            to: "2024-03-16T12:29:24.826Z",
+            numberOfItems: 24,
+            aggregationOperation: "$avg"
+          })
+        });
+
+        expect(res.status).toBe(500);
+        const { message } = await res.json();
+        expect(message).toBe("Internal Server Error");
+      }
+    });
+    spy.mockRestore();
+  });
 
   test("Correct request", async () => {
     const spy = jest.spyOn(measurementHelper, "fetchMeasurement");
